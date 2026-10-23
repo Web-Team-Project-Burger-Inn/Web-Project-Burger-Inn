@@ -1,0 +1,682 @@
+/* ============================================================
+   NAVBAR
+   - blue background
+   - White brand + links
+   - Hover highlight on nav links
+   ============================================================ */
+.custom-navbar {
+  background: #0D6EFD; /* blue color */
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar brand */
+.custom-navbar .navbar-brand {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+
+/* Navbar links (hover uses background + color + transition for smooth effect) */
+.custom-navbar .nav-link {
+  color: #fff;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  margin: 0 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+  border-radius: 5px;
+}
+
+.custom-navbar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #ffd700; /* golden hover */
+  text-decoration: none;
+}
+
+/* Buttons in navbar (Sign in / Sign up / user dropdown trigger) */
+.custom-navbar .btn {
+  border-radius: 30px;
+  padding: 6px 15px;
+}
+
+/* Buttons appearance for generic .btn-link (e.g. "View all deals") */
+.btn-link {
+  color: #6c1818;
+  text-decoration: none;
+}
+
+/* Footer base size */
+footer {
+  font-size: 0.9rem;
+}
+
+
+/* ============================================================
+   FOOTER (v2 palette)
+   - Dark background with warm blue headings
+   ============================================================ */
+.custom-footer {
+  background: linear-gradient(180deg, #2c2c2c, #1a1a1a); /* dark but not pure black */
+  color: #f8f9fa; /* light text */
+  padding: 40px 0;
+}
+
+.custom-footer h5 {
+  color: #e0e0e0; /* white for headings */
+  margin-bottom: 1rem;
+}
+
+.custom-footer p,
+.custom-footer li {
+  color: #e0e0e0; /* slightly lighter text for readability */
+  line-height: 1.6;
+}
+
+.custom-footer a {
+  color: #ffd700; /* golden yellow links */
+  text-decoration: none;
+}
+
+.custom-footer a:hover {
+  text-decoration: underline;
+}
+
+.custom-footer hr {
+  border-color: rgba(255, 255, 255, 0.2);
+  margin: 20px 0;
+}
+
+.custom-footer .small {
+  color: #ccc;
+}
+
+
+/* ============================================================
+   GLOBAL CARDS / MENU
+   - Shared hover "lift" animation for all .card elements
+   ============================================================ */
+.card {
+  border-radius: 10px;
+  transition: transform 0.3s, box-shadow 0.3s; /* smooth hover animation */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* card moves slightly up on hover */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Menu cards: image height + crop */
+.card-img-top {
+  object-fit: cover;
+  height: 180px;
+}
+
+/* Clamp menu descriptions so long text doesn't stretch cards */
+.menu-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 3.6em; /* keeps card heights consistent */
+}
+
+/* Deals cards */
+.deal-card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.deal-card .card-img-top {
+  height: 180px;
+  object-fit: cover;
+}
+
+.deal-card .badge.bg-warning {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Generic extra-small text */
+.extra-small {
+  font-size: 0.8rem;
+}
+
+
+/* ============================================================
+   FLOATING REVIEW BUTTON
+   - Fixed pill button in bottom-right corner
+   - Hover uses transform + box-shadow for subtle lift
+   ============================================================ */
+.floating-review-btn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: #0D6EFD;         /* yellow pill */
+  color: #111827;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.floating-review-btn:hover {
+  color: #111827;
+  background: #0D6EFD;
+  text-decoration: none;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+
+/* ============================================================
+   REVIEWS & RESERVATION (v2 palette)
+   - Shared card styling for review / reservation / success cards
+   ============================================================ */
+.review-card,
+.reservation-card,
+.success-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.review-list .review-item {
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.review-list .review-item:last-child {
+  border-bottom: none;
+}
+
+.review-stars .star {
+  font-size: 0.9rem;
+  color: #e5e7eb; /* gray-200 neutral */
+}
+
+.review-stars .star.filled {
+  color: #ffc107; /* yellow stars */
+}
+
+
+/* ============================================================
+   FAVORITE HEART ICON (Menu Items)
+   - Absolute positioned circular heart
+   - Hover/active use scale + color transitions
+   ============================================================ */
+
+.favorite-form {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
+/* Base heart button */
+.favorite-btn {
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #d1d5db; /* light gray when not fav */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Hover state (not yet favourited) */
+.favorite-btn:hover {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  color: #ffd700; /* golden hover */
+}
+
+/* When item IS favourited */
+.favorite-btn.is-fav {
+  color: #ff4d4f;           /* warm red heart */
+  background: #fff7ed;      /* soft warm background */
+}
+
+.favorite-btn.is-fav:hover {
+  color: #ff1a1a;           /* slightly brighter red */
+  transform: translateY(-1px) scale(1.08);
+}
+
+/* Slightly larger tap target on mobile */
+@media (max-width: 576px) {
+  .favorite-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
+
+
+/* ============================================================
+   MY ORDER / ORDER TRACKER
+   - Card styling + multi-step progress bar
+   ============================================================ */
+
+.order-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.35); /* slate-ish */
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Compact info text below title */
+.order-card .small {
+  line-height: 1.4;
+}
+
+/* Progress bar container */
+.order-progress {
+  height: 8px;
+  border-radius: 999px;
+  background-color: #f3f4f6; /* light grey */
+  overflow: hidden;
+}
+
+/* Bar fill */
+.order-progress .progress-bar {
+  background: linear-gradient(90deg, #ff0000, #ff0000);
+  border-radius: 999px;
+}
+
+/* 4-step progression based on .order-step-X */
+.order-progress.order-step-1 .progress-bar {
+  width: 15%;
+}
+
+.order-progress.order-step-2 .progress-bar {
+  width: 45%;
+}
+
+.order-progress.order-step-3 .progress-bar {
+  width: 75%;
+}
+
+.order-progress.order-step-4 .progress-bar {
+  width: 100%;
+}
+
+/* Label row under progress bar */
+.tiny-labels span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+
+/* ============================================================
+   ABOUT PAGE
+   - Hero banner + overlay
+   - About content card styling
+   ============================================================ */
+
+/* Hero with chef + ingredients background banner */
+.about-hero {
+  position: relative;
+  height: 320px;
+  background-image: url("../images/about-hero.jpg"); /* <-- update filename if needed */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+}
+
+/* Light overlay so text stays readable but image is visible */
+.about-hero-overlay {
+  width: 100%;
+  padding: 40px 0;
+  background: rgba(212, 209, 209, 0.45);  /* soft, semi-transparent grey band */
+}
+
+
+/* Text block inside hero */
+.about-hero .hero-inner {
+  color: #000000;
+  text-align: left;
+}
+
+.about-hero .hero-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.about-hero .hero-sub {
+  font-size: 0.95rem;
+  color: #000000;
+}
+
+/* Main content area – white, like the rest of the site */
+.about-content {
+  background: #ffffff;
+}
+
+/* Make cards on About page (contact + social) a bit more premium */
+.about-content aside .card {
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Slightly tighter paragraph leading on the left column */
+.about-content .lead {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+/* About hero responsiveness */
+@media (max-width: 991px) {
+  .about-hero {
+    height: 240px;
+  }
+
+  .about-hero-overlay {
+    padding: 24px 0;
+  }
+
+  .about-hero .hero-title {
+    font-size: 1.8rem;
+  }
+}
+
+
+/* ============================================================
+   HOME HERO
+   - Landing hero section with video + highlight pills
+   ============================================================ */
+
+.home-hero {
+  /* clean white hero background */
+  background: #ffffff;
+}
+
+.home-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.home-hero-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.home-hero-subtitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ff7a1a;
+}
+
+.home-hero-copy {
+  color: #374151;
+}
+
+.home-hero-media {
+  background: #000;
+  border-radius: 1.5rem;
+}
+
+/* Small highlight row under hero copy (pill chips) */
+.home-hero-highlights div {
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+
+/* ============================================================
+   HOME BANDS (deals/menu/reviews)
+   - White background strips grouping related content
+   ============================================================ */
+
+/* now white instead of cream */
+.home-band--warm {
+  background: #ffffff;
+}
+
+/* Shared section headings */
+.section-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.75rem;
+  color: #a16207; /* warm brown/orange */
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Deals + menu cards refinement inside bands */
+.home-band .card,
+.deal-card {
+  border-radius: 1rem;
+}
+
+/* Slightly softer hover inside bands (more pronounced shadow) */
+.home-band .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+}
+
+
+/* ============================================================
+   AUTH PAGES (LOGIN / SIGNUP)
+   - Shared styles for auth layout + inputs + buttons
+   ============================================================ */
+
+.auth-page {
+  background: #fff7eb; /* soft warm background */
+}
+
+.auth-wrapper {
+  padding: 3.5rem 0 4.5rem;
+  min-height: calc(100vh - 200px); /* leaves room for navbar + footer */
+}
+
+.auth-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.4rem;
+}
+
+.auth-subtitle {
+  color: #6b7280;
+  font-size: 0.98rem;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.auth-card {
+  border-radius: 1.25rem;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.auth-card .card-body {
+  padding: 2rem 2.25rem;
+}
+
+.card-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.auth-label {
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+/* Wrap around default Django <input> with no classes */
+.auth-input-wrap input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input-wrap input:focus {
+  border-color: #0D6EFD; /* blue */
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* Textareas (address) styled same as inputs */
+.auth-input-wrap textarea {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input-wrap textarea:focus {
+  border-color: #0D6EFD; /* orange */
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* Make error messages blend with design */
+.invalid-feedback {
+  color: #b91c1c;
+}
+
+/* Main button for auth pages */
+.auth-primary-btn {
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: #0D6EFD;
+  color: #111827;
+}
+
+.auth-primary-btn:hover {
+  background: #0D6EFD;
+  color: #111827;
+}
+
+/* Password rules text block */
+.auth-password-rules {
+  background: #fffaf0;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px dashed #fbbf24;
+  color: #6b7280;
+}
+
+/* Helper text under card */
+.auth-footer-text {
+  color: #4b5563;
+}
+
+.auth-link {
+  color: #f97316;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  color: #ea580c;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments for auth */
+@media (max-width: 767px) {
+  .auth-wrapper {
+    padding: 2.5rem 0 3rem;
+  }
+
+  .auth-card .card-body {
+    padding: 1.5rem 1.6rem;
+  }
+
+  .auth-title {
+    font-size: 1.7rem;
+  }
+}
+
+/* Size note text inside size buttons */
+.size-note {
+  color: #6c757d;           /* normal muted look when not selected */
+  transition: color 0.15s ease;
+}
+
+/* When the radio is checked, let the span inherit the button's text colour */
+.btn-check:checked + .btn .size-note,
+.btn-check:active + .btn .size-note {
+  color: inherit;
+}
+
+
+/* Makes warning buttons blue */
+.btn-warning {
+    background-color: #0D6EFD;
+    border-color: #0D6EFD;
+    color: #FFFFFF;
+}
+
+/* Button hover */
+.btn-warning:hover {
+    background-color: #0B5ED7;
+    border-color: #0A58CA;
+    color: #FFFFFF;
+}
+
+/* Button focus and active */
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning:focus-visible {
+    background-color: #0B5ED7;
+    border-color: #0A58CA;
+    color: #FFFFFF;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
