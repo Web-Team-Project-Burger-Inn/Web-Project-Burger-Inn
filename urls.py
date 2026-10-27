@@ -1,0 +1,1 @@
+path("reviews/", views.reviews_view, name="reviews"),
