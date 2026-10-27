@@ -35,3 +35,7 @@ class Review(models.Model):
 
     reviews = Review.objects.all()
     return render(request, "pages/reviews.html", {"reviews": reviews}) 
+
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        form.save()
