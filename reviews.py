@@ -32,3 +32,6 @@ class Review(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.rating}★)"
+
+    reviews = Review.objects.all()
+    return render(request, "pages/reviews.html", {"reviews": reviews}) 
