@@ -1,0 +1,386 @@
+
+/* GENERAL STYLING */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #222222;
+}
+
+/* NAVIGATION BAR */
+.custom-navbar {
+    background-color: #0d6efd;
+    padding: 15px 0;
+}
+
+.custom-navbar .navbar-brand {
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.custom-navbar .navbar-brand:hover {
+    color: #f8f9fa;
+}
+
+.custom-navbar .nav-link {
+    color: #ffffff;
+    font-weight: 500;
+    margin-left: 15px;
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .nav-link.active {
+    color: #ffe082;
+}
+
+.about-hero {
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.35),
+            rgba(255, 255, 255, 0.35)
+        ),
+        url("/static/about/images/about-hero.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 300px;
+}
+
+.about-hero-overlay {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+.hero-inner {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.hero-title {
+    color: #212529;
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.hero-sub {
+    color: #343a40;
+    font-size: 18px;
+}
+
+/* MAIN CONTENT */
+.about-content {
+    min-height: 300px;
+}
+
+.about-content h2 {
+    color: #212529;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.about-content h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.about-content p {
+    line-height: 1.8;
+    color: #444444;
+}
+
+.about-content .lead {
+    font-size: 19px;
+}
+
+/* CONTACT CARD */
+.contact-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.contact-card .card-body {
+    padding: 25px;
+}
+
+.contact-card .card-title {
+    font-weight: bold;
+}
+
+.contact-card a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.contact-card a:hover {
+    text-decoration: underline;
+}
+
+/* FOOTER */
+.custom-footer {
+    background-color: #212529;
+    color: #ffffff;
+    padding: 25px 0;
+    margin-top: 50px;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-sub {
+        font-size: 16px;
+    }
+
+    .custom-navbar .nav-link {
+        margin-left: 0;
+    }
+}
+
+
+/* PROFILE PAGE */
+
+.profile-page h1 {
+    font-weight: bold;
+    color: #212529;
+}
+
+.profile-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.profile-card .card-body {
+    padding: 25px;
+}
+
+.profile-avatar {
+    width: 85px;
+    height: 85px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-color: #e9f2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+}
+
+.profile-card .card-title {
+    font-weight: bold;
+}
+
+.profile-card table th {
+    white-space: nowrap;
+}
+
+.favourite-icon {
+    font-size: 55px;
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+.empty-favourites {
+    background-color: #fafafa;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .profile-card .card-body {
+        padding: 18px;
+    }
+}
+
+
+
+
+.profile-page {
+    max-width: 1150px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-page h1 {
+    color: #212529;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.profile-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.profile-card:hover {
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.09);
+}
+
+.profile-card .card-body {
+    padding: 25px;
+}
+
+.profile-card .card-title {
+    color: #212529;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Profile avatar */
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    border: 3px solid #d7e6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 43px;
+}
+
+.profile-card h4 {
+    color: #212529;
+    font-weight: 700;
+    font-size: 21px;
+}
+
+.profile-card .text-muted {
+    color: #6c757d !important;
+    font-size: 14px;
+}
+
+.profile-card hr {
+    border-color: #dee2e6;
+    margin: 20px 0;
+}
+
+.profile-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #495057;
+}
+
+/* Edit profile button */
+
+.profile-card .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.profile-card .btn-primary:disabled {
+    opacity: 0.75;
+}
+
+/* Order history table */
+
+.profile-card .table {
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+.profile-card .table thead th {
+    color: #495057;
+    background-color: #f8f9fa;
+    font-weight: 700;
+    border-bottom: 2px solid #dee2e6;
+    padding: 13px 10px;
+    white-space: nowrap;
+}
+
+.profile-card .table tbody td {
+    padding: 16px 10px;
+    vertical-align: middle;
+}
+
+.profile-card .table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Favourites empty state */
+
+.empty-favourites {
+    background: #f8f9fb;
+    border: 1px dashed #e0e4e9;
+    border-radius: 10px;
+    padding: 30px 15px !important;
+}
+
+.favourite-icon {
+    font-size: 54px;
+    line-height: 1.2;
+    color: #dc3545;
+    margin-bottom: 15px;
+}
+
+.empty-favourites p {
+    margin-bottom: 8px;
+}
+
+/* Responsive layout */
+
+@media (max-width: 991px) {
+    .profile-page {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .profile-card .card-body {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-page h1 {
+        font-size: 27px;
+    }
+
+    .profile-card .card-body {
+        padding: 18px;
+    }
+
+    .profile-card .table {
+        min-width: 500px;
+    }
+}
+
+
+/* Keep the footer at the bottom on short pages */
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-page {
+    flex: 1;
+    width: 100%;
+}
+
+
+
