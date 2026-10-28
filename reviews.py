@@ -1,3 +1,11 @@
+from django.db import models
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from django.urls import reverse
+
+from .forms import ReviewForm
+
+
 class Review(models.Model):
     """
     FEATURE: Customer reviews.
@@ -33,9 +41,18 @@ class Review(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.rating}★)"
 
-    reviews = Review.objects.all()
-    return render(request, "pages/reviews.html", {"reviews": reviews}) 
+def review_list(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to submit a review.")
+            return redirect(f"{reverse('login')}?next={reverse('reviews')}")
 
-    form = ReviewForm(request.POST)
-    if form.is_valid():
-        form.save()
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("reviews")
+    else:
+        form = ReviewForm()
+
+    reviews = Review.objects.all()
+    return render(request, "pages/reviews.html", {"reviews": reviews, "form": form})
