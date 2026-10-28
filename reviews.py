@@ -56,3 +56,6 @@ def review_list(request):
 
     reviews = Review.objects.all()
     return render(request, "pages/reviews.html", {"reviews": reviews, "form": form})
+
+    messages.success(request, "Thank you for your review! 🍕")
+    messages.error(request, "Please fix the errors below.")
