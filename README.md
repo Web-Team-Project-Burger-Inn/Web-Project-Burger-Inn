@@ -1,1 +1,3 @@
 # Web-Project-Burger-Inn
+# All team members contributed equally to the coding, implementation, testing, debugging, 
+# and integration of the project. Responsibilities were equally shared among team members, with everyone participating in development and problem-solving to ensure the successful completion of the project. Each member made an equal contribution toward achieving the project objectives.
