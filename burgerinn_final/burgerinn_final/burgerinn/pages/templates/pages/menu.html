@@ -1,0 +1,312 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}Menu · BurgerInn{% endblock %}
+
+{% block content %}
+
+<!-- MENU PAGE
+     - Filter bar: search, category, veg, spicy, sort
+     - Category chips for quick filtering
+     - Item grid with size/flavour selector and “Add to cart”
+     - Favourites toggle (heart) for logged-in users
+     - Small JS snippet updates displayed price when size changes
+-->
+<section class="container py-4">
+
+  <!-- Page header -->
+  <header class="mb-3">
+    <h1 class="h3 mb-1">Our Menu</h1>
+    <p class="text-muted m-0">Freshly baked burgers, sides and drinks.</p>
+  </header>
+
+  <!-- FILTER BAR (GET → keeps filters in the URL) -->
+  <!-- q = search text, cat = category slug, veg/spicy = flags, sort = ordering -->
+  <form method="get" class="card shadow-sm mb-4">
+    <div class="card-body row g-2 align-items-center">
+
+      <!-- Search by name or description -->
+      <div class="col-md-4">
+        <input class="form-control"
+               name="q"
+               value="{{ q }}"
+               placeholder="Search burgers or description…">
+      </div>
+
+      <!-- Category dropdown -->
+      <div class="col-md-3">
+        <select name="cat" class="form-select">
+          <option value="">All categories</option>
+          {% for c in categories %}
+            <option value="{{ c.slug }}" {% if active_cat == c.slug %}selected{% endif %}>
+              {{ c.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Sort dropdown -->
+      <div class="col-md-3">
+        <select name="sort" class="form-select">
+          <option value="name" {% if sort == "name" %}selected{% endif %}>Sort: Name</option>
+          <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Price: Low → High</option>
+          <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Price: High → Low</option>
+        </select>
+      </div>
+
+      <!-- Veg / Spicy checkboxes + Apply button -->
+      <div class="col-md-2 d-flex gap-3 align-items-center">
+        <div class="form-check">
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="veg"
+                 value="1"
+                 id="veg"
+                 {% if only_veg %}checked{% endif %}>
+          <label class="form-check-label" for="veg">Veg</label>
+        </div>
+
+        <div class="form-check">
+          <input type="checkbox"
+                 class="form-check-input"
+                 name="spicy"
+                 value="1"
+                 id="spicy"
+                 {% if only_spicy %}checked{% endif %}>
+          <label class="form-check-label" for="spicy">Spicy</label>
+        </div>
+
+        <button class="btn btn-primary ms-auto" type="submit">Apply</button>
+      </div>
+
+    </div>
+  </form>
+
+  <!-- CATEGORY CHIPS (quick links that keep the rest of the filters) -->
+  <div class="mb-3 d-flex flex-wrap gap-2">
+    <!-- “All” resets category but keeps other filters off -->
+    <a href="{% url 'menu' %}"
+       class="btn btn-sm {% if not active_cat %}btn-dark{% else %}btn-outline-dark{% endif %}">
+      All
+    </a>
+
+    {% for c in categories %}
+      <a href="{% url 'menu' %}?cat={{ c.slug }}{% if q %}&q={{ q }}{% endif %}{% if only_veg %}&veg=1{% endif %}{% if only_spicy %}&spicy=1{% endif %}&sort={{ sort }}"
+         class="btn btn-sm {% if active_cat == c.slug %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        {{ c.name }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- MENU GRID (cards for each MenuItem) -->
+  <div class="row g-3">
+    {% for item in items %}
+      {% with sizes=item.sizes.all %}
+
+      <div class="col-12 col-sm-16 col-lg-4">
+        <div class="card h-100 shadow-sm position-relative">
+
+          <!-- Favourite heart (only if user is logged in) -->
+          {% if user.is_authenticated %}
+            <form method="post"
+                  action="{% url 'favorite_toggle' item.id %}"
+                  class="favorite-form">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit"
+                      class="favorite-btn {% if item.is_favorite %}is-fav{% endif %}"
+                      title="Toggle favourite">
+                {% if item.is_favorite %}♥{% else %}♡{% endif %}
+              </button>
+            </form>
+          {% endif %}
+
+          <!-- Image (fallback placeholder if no image) -->
+          {% if item.image %}
+            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+          {% else %}
+            <img src="{% static 'pages/images/placeholder_burger.jpg' %}"
+                 class="card-img-top"
+                 alt="{{ item.name }}">
+          {% endif %}
+
+          <!-- Card body -->
+          <div class="card-body d-flex flex-column">
+
+            <!-- Name -->
+            <h5 class="card-title mb-1">{{ item.name }}</h5>
+
+            <!-- Category + Veg / Spicy badges -->
+            <p class="text-muted small mb-2">
+              {{ item.category.name }}
+              {% if item.is_veg %}
+                <span class="badge bg-success ms-2">Veg</span>
+              {% endif %}
+              {% if item.is_spicy %}
+                <span class="badge bg-danger ms-1">Spicy</span>
+              {% endif %}
+            </p>
+
+            <!-- Description (CSS limits it to a few lines) -->
+            {% if item.description %}
+              <p class="card-text small flex-grow-1 menu-description">
+                {{ item.description }}
+              </p>
+            {% else %}
+              <!-- Spacer so buttons stay aligned at bottom -->
+              <div class="flex-grow-1"></div>
+            {% endif %}
+
+            <!-- Size / flavour selector row -->
+            <div class="mt-2 mb-2">
+              <div class="text-muted small mb-1">
+                {% if item.slug == "cold-drinks-330ml" %}
+                  Flavour:
+                {% else %}
+                  Size:
+                {% endif %}
+              </div>
+
+              {% if sizes %}
+                <div class="btn-group flex-wrap" role="group">
+                  {% for s in sizes %}
+                    <!-- Hidden radio; label acts as the visible button -->
+                    <input type="radio"
+                           class="btn-check js-size-option"
+                           name="size_choice_{{ item.id }}"
+                           id="size-{{ item.id }}-{{ s.size }}"
+                           value="{{ s.size }}"
+                           data-item-id="{{ item.id }}"
+                           data-price="{{ s.price }}"
+                           {% if forloop.first %}checked{% endif %}>
+
+                    <label class="btn btn-outline-secondary btn-sm mb-1"
+                           for="size-{{ item.id }}-{{ s.size }}">
+
+                      {% if item.slug == "cold-drinks-330ml" %}
+                        <!-- Map drink flavours onto S/M/L for this one SKU -->
+                        {% if s.size == "S" %}
+                          Coca-Cola
+                        {% elif s.size == "M" %}
+                          Sprite
+                        {% elif s.size == "L" %}
+                          Fanta
+                        {% endif %}
+                      {% else %}
+                        {{ s.get_size_display }}
+                        {% if s.size == "S" %}
+                          <span class="size-note small">(23 cm)</span>
+                        {% elif s.size == "M" %}
+                          <span class="size-note small">(30 cm)</span>
+                        {% elif s.size == "L" %}
+                          <span class="size-note small">(35 cm)</span>
+                        {% endif %}
+                      {% endif %}
+
+                      <br>Rs {{ s.price }}
+                    </label>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <span class="text-muted small">Standard size</span>
+              {% endif %}
+            </div>
+
+            <!-- Price display + Add-to-cart controls -->
+            <div class="d-flex align-items-center justify-content-between mt-2">
+
+              <!-- Main price text (updated by JS when size changes) -->
+              <div class="fw-semibold">
+                <span class="js-price-display" data-item-id="{{ item.id }}">
+                  {% if sizes %}
+                    Rs {{ sizes.0.price }}
+                  {% else %}
+                    Rs {{ item.price }}
+                  {% endif %}
+                </span>
+              </div>
+
+              <!-- Add-to-cart form (only for logged-in users) -->
+              {% if user.is_authenticated %}
+                <form method="post"
+                      action="{% url 'cart_add' item.id %}"
+                      class="d-flex align-items-center gap-2">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+                  {% if sizes %}
+                    <!-- Hidden size field, kept in sync with the selected radio -->
+                    <input type="hidden"
+                           name="size"
+                           value="{{ sizes.0.size }}"
+                           class="js-size-hidden"
+                           data-item-id="{{ item.id }}">
+                  {% else %}
+                    <input type="hidden" name="size" value="">
+                  {% endif %}
+
+                  <input type="number"
+                         class="form-control form-control-sm"
+                         style="width:80px"
+                         name="qty"
+                         min="1"
+                         value="1">
+
+                  <button class="btn btn-outline-primary btn-sm" type="submit">
+                    Add
+                  </button>
+                </form>
+              {% else %}
+                <!-- Guests must log in first; next= current URL so they return here -->
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                   class="btn btn-outline-secondary btn-sm">
+                  Login to add
+                </a>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {% endwith %}
+    {% empty %}
+      <!-- No items found for current filter set -->
+      <div class="col-12">
+        <div class="alert alert-info">No items match your filters.</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- JS: update price + hidden size when user changes size radio -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sizeOptions = document.querySelectorAll('.js-size-option');
+
+    sizeOptions.forEach(function (opt) {
+      opt.addEventListener('change', function () {
+        const itemId = this.dataset.itemId;
+        const price = this.dataset.price;
+        const size = this.value;
+
+        // Update visible price
+        const priceSpan = document.querySelector(
+          '.js-price-display[data-item-id="' + itemId + '"]'
+        );
+        if (priceSpan) {
+          priceSpan.textContent = 'Rs ' + price;
+        }
+
+        // Update matching hidden size input used by the form
+        const hiddenSize = document.querySelector(
+          'input.js-size-hidden[data-item-id="' + itemId + '"]'
+        );
+        if (hiddenSize) {
+          hiddenSize.value = size;
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}

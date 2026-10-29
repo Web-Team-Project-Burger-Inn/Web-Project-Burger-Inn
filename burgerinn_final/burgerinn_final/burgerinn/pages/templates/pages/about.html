@@ -1,0 +1,112 @@
+{% extends "pages/base.html" %}
+{% load static %}
+
+{% block title %}About - {{ about.title|default:"BurgerInn" }}{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+     HERO SECTION
+     - Uses .about-hero and .about-hero-overlay styles from style.css
+     - Background image + light overlay so text stays readable
+     - Shows dynamic title + optional founded year / founder name
+     ============================================================ -->
+<section class="about-hero">
+  <div class="about-hero-overlay">
+    <div class="hero-inner container">
+      <h1 class="hero-title">{{ about.title|default:"BurgerInn" }}</h1>
+
+      <!-- Optional meta line under title (founded year + founder name) -->
+      {% if about.founded_year or about.founder_name %}
+        <p class="hero-sub">
+          {% if about.founded_year %}Founded {{ about.founded_year }}{% endif %}
+          {% if about.founded_year and about.founder_name %} • {% endif %}
+          {% if about.founder_name %}Founder: {{ about.founder_name }}{% endif %}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MAIN CONTENT
+     - Left: “Our Story” text pulled from About.description
+     - Right: contact card + optional social links card
+     - All data comes from About model (editable in Django admin)
+     ============================================================ -->
+<section class="about-content container my-5">
+  {% if about %}
+    <div class="row">
+      <!-- Left column: main story / description -->
+      <div class="col-lg-8">
+        <h2>Our Story</h2>
+        <!-- linebreaksbr → keeps admin line breaks while rendering as <br> -->
+        <p class="lead">{{ about.description|linebreaksbr }}</p>
+      </div>
+
+      <!-- Right column: contact info + social links -->
+      <aside class="col-lg-4">
+        <!-- Contact Card -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Contact</h5>
+
+            <!-- Only show fields that are actually filled in the About record -->
+            {% if about.address %}
+              <p>
+                <strong>Address:</strong><br>
+                {{ about.address }}
+              </p>
+            {% endif %}
+
+            {% if about.contact_phone %}
+              <p>
+                <strong>Phone:</strong> {{ about.contact_phone }}
+              </p>
+            {% endif %}
+
+            {% if about.contact_email %}
+              <p>
+                <strong>Email:</strong>
+                <a href="mailto:{{ about.contact_email }}">
+                  {{ about.contact_email }}
+                </a>
+              </p>
+            {% endif %}
+
+            <p class="text-muted small">
+              Last updated: {{ about.last_updated|date:"F j, Y, H:i" }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Social links card (optional)
+             - About.social_links is a JSONField (e.g. {"facebook": "...", "instagram": "..."})
+             - Rendered as simple text links with .social-link styling
+             -->
+        {% if about.social_links %}
+          <div class="card">
+            <div class="card-body">
+              <h6>Follow us</h6>
+              <p>
+                {% for platform, link in about.social_links.items %}
+                  <a class="social-link me-2"
+                     href="{{ link }}"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    {{ platform|title }}
+                  </a>
+                {% endfor %}
+              </p>
+            </div>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  {% else %}
+    <!-- Fallback if no About object exists yet in the database -->
+    <p>No about content available yet. Add content from the admin panel.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

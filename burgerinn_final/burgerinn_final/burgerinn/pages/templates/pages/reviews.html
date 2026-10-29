@@ -1,0 +1,145 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}Customer Reviews · BurgerInn{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    
+    <!--
+      LEFT COLUMN: Review form (or login prompt)
+      - If user is logged in: show ReviewForm (name, gender, rating, comment)
+      - If not logged in: show button to go to login with ?next=<current page>
+    -->
+    <div class="col-lg-5 mb-4">
+      <div class="card shadow-sm review-card">
+        <div class="card-body">
+          <h1 class="h4 mb-3">🍔 BurgerInn - Customer Reviews</h1>
+
+          {% if user.is_authenticated %}
+            <!-- Authenticated user can submit a review -->
+            <p class="text-muted small mb-3">
+              Leave a review and let us know how your experience was!
+            </p>
+
+            <form method="post" novalidate>
+              {% csrf_token %}
+
+              <!-- Name field -->
+              <div class="mb-3">
+                <label class="form-label">Your Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                  <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Gender select (Male/Female/Other) -->
+              <div class="mb-3">
+                <label class="form-label">Gender</label>
+                {{ form.gender }}
+                {% if form.gender.errors %}
+                  <div class="text-danger small">{{ form.gender.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!--
+                Rating field:
+                Uses choices from Review.RATING_CHOICES (1–5)
+                Template below renders stars, this select is the actual input
+              -->
+              <div class="mb-3">
+                <label class="form-label">Rate us</label>
+                {{ form.rating }}
+                <div class="form-text">5 ⭐ means “Amazing!”</div>
+                {% if form.rating.errors %}
+                  <div class="text-danger small">{{ form.rating.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Comment textarea -->
+              <div class="mb-3">
+                <label class="form-label">Your Review</label>
+                {{ form.comment }}
+                {% if form.comment.errors %}
+                  <div class="text-danger small">{{ form.comment.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Submit button – sends POST to reviews_view -->
+              <button type="submit" class="btn btn-warning w-100 fw-semibold">
+                Submit Review
+              </button>
+            </form>
+          {% else %}
+            <!-- Visitor is not logged in → show login call-to-action -->
+            <p class="text-muted small mb-3">
+              You need to be logged in to submit a review.
+            </p>
+
+            <!-- Login link with ?next=<current URL> so user returns here after login -->
+            <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" 
+               class="btn btn-warning w-100 fw-semibold">
+              Login to write a review
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!--
+      RIGHT COLUMN: List of existing reviews
+      - Shows name, gender, star rating (★), comment and timestamp
+      - Ordered newest-first (via Review.Meta.ordering in models.py)
+    -->
+    <div class="col-lg-7">
+      <h2 class="h5 mb-3">What People Say</h2>
+
+      {% if reviews %}
+        <div class="list-group review-list">
+          {% for r in reviews %}
+            <div class="list-group-item review-item">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div>
+                  <h4 class="h6 mb-0">{{ r.name }}</h4>
+                  <span class="text-muted small">({{ r.gender }})</span>
+                </div>
+
+                <!--
+                  Star display:
+                  - Loops 5 times (string "12345")
+                  - Fills stars up to r.rating with .filled class
+                  - Uses pure Django templating, no JavaScript
+                -->
+                <div class="stars review-stars">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= r.rating %}
+                      <span class="star filled">★</span>
+                    {% else %}
+                      <span class="star">★</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- Review text -->
+              <p class="mb-1">{{ r.comment }}</p>
+
+              <!-- Human-readable date/time -->
+              <p class="text-muted small mb-0">
+                {{ r.created_at|date:"d M Y, H:i" }}
+              </p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty state – no reviews yet -->
+        <div class="alert alert-info">
+          No reviews yet. Be the first to share your BurgerInn experience!
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}BurgerInn · Fresh Burger Delivered Hot{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+     HOME PAGE
+     - Hero: branding + autoplay video
+     - Hot deals: shows up to 3 active deals
+     - Popular menu: shows a few popular MenuItem entries
+     - Reviews summary: shows latest review + rating stats
+     - CTA: link back to full menu
+     ============================================================ -->
+
+<!-- =========================
+     HERO (branding + video)
+     Uses static hero video + poster image
+   ========================= -->
+<section class="home-hero py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: main copy + CTAs -->
+      <div class="col-lg-6">
+        <p class="home-eyebrow mb-2">FRESH BURGER · FAST DELIVERY</p>
+        <h1 class="home-hero-title mb-1">Welcome to BurgerInn</h1>
+        <p class="home-hero-subtitle mb-3">Delivered Hot, Every Time</p>
+
+        <p class="lead home-hero-copy mb-4">
+          Freshly grilled burgers, premium ingredients and lightning-fast
+          delivery. Get your favourite burger in 30 minutes or less*.
+        </p>
+
+        <!-- Small highlight row (3 bullet points) -->
+        <div class="d-flex flex-wrap gap-3 mb-4 home-hero-highlights">
+          <div class="d-inline-flex align-items-center small text-muted">
+            <i class="bi bi-clock-history me-2"></i> 30 min delivery
+          </div>
+          <div class="d-inline-flex align-items-center small text-muted">
+            <i class="bi bi-fire me-2"></i> Freshly grilled burgers
+          </div>
+          <div class="d-inline-flex align-items-center small text-muted">
+            <i class="bi bi-truck me-2"></i> Live order tracking
+          </div>
+        </div>
+
+        <!-- Key actions: go to menu / ordering -->
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'menu' %}" class="btn btn-warning btn-lg px-4">
+            Order Now →
+          </a>
+          <a href="{% url 'menu' %}" class="btn btn-outline-dark btn-lg px-4">
+            View Menu
+          </a>
+        </div>
+
+        <p class="small text-muted mt-3 mb-0">
+          *Delivery times may vary by location and order size.
+        </p>
+      </div>
+
+      <!-- Right: autoplay hero video (static asset) -->
+      <div class="col-lg-6">
+        <div class="home-hero-media shadow-lg rounded-4 overflow-hidden">
+          <div class="ratio ratio-16x9">
+            <video
+              class="w-100 h-100"
+              autoplay
+              muted
+              loop
+              playsinline
+              poster="{% static 'pages/images/hero-burger.jpg' %}"
+            >
+              <source src="{% static 'pages/videos/hero.mp4' %}" type="video/mp4">
+               browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================
+     HOT DEALS
+     - Uses "deals" from home_view (active Deal objects)
+     - Shows up to 3 deals with price and discount info
+   ========================= -->
+<section class="home-band home-band--warm py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <p class="section-kicker mb-1">HOT DEALS</p>
+        <h2 class="section-title mb-1">Today&apos;s Special Deals</h2>
+        <p class="text-muted mb-0">
+          Don’t miss out on these limited-time offers.
+        </p>
+      </div>
+      <a href="{% url 'deals' %}" class="btn btn-link fw-semibold text-decoration-none">
+        View all deals →
+      </a>
+    </div>
+
+    <div class="row g-4">
+      <!-- Slice to only show first 3 deals on home page -->
+      {% for deal in deals|slice:":3" %}
+        <div class="col-md-4">
+          <div class="card deal-card h-100">
+            {% if deal.image %}
+              <img src="{{ deal.image.url }}" class="card-img-top" alt="{{ deal.title }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title mb-1">{{ deal.title }}</h5>
+              <p class="card-text text-muted small mb-2 menu-description">
+                {{ deal.description|truncatechars:120 }}
+              </p>
+
+              <!-- Pricing + discount % display -->
+              <div class="mb-3">
+                <div class="fw-semibold">Rs {{ deal.price }}</div>
+                {% if deal.original_price and deal.original_price > deal.price %}
+                  <small class="text-muted text-decoration-line-through">
+                    Rs {{ deal.original_price }}
+                  </small>
+                  {% if deal.discount_percentage %}
+                    <small class="text-success ms-1">
+                      Save {{ deal.discount_percentage }}%
+                    </small>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              <!-- CTA takes user to menu, with deal code pre-attached in query -->
+              <a href="{% url 'menu' %}?deal={{ deal.code }}"
+                 class="btn btn-warning btn-sm mt-auto w-100">
+                Order this deal →
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">No deals available at the moment. Check back soon!</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================
+     POPULAR MENU ITEMS
+     - Uses "popular_items" from home_view
+     - Showcases 3 MenuItem entries as "customer favourites"
+   ========================= -->
+<section class="home-band home-band--warm pt-4 pb-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <p class="section-kicker mb-1">CUSTOMER FAVOURITES</p>
+        <h2 class="section-title mb-1">Most-Loved Menu Items</h2>
+        <p class="text-muted mb-0">
+          These are the items our customers can’t get enough of.
+        </p>
+      </div>
+      <a href="{% url 'menu' %}" class="btn btn-link fw-semibold text-decoration-none">
+        View full menu →
+      </a>
+    </div>
+
+    <div class="row g-4">
+      <!-- Only first 3 items shown here for a compact layout -->
+      {% for item in popular_items|slice:":3" %}
+        <div class="col-md-4">
+          <div class="card h-100 position-relative">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title mb-1">{{ item.name }}</h5>
+              <p class="card-text text-muted small mb-2 menu-description">
+                {{ item.description|truncatechars:110 }}
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                <span class="fw-semibold">Rs {{ item.price }}</span>
+                <a href="{% url 'menu' %}?item={{ item.slug }}"
+                   class="btn btn-outline-primary btn-sm">
+                  View
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">Menu coming soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================
+     REVIEWS SUMMARY + CTA
+     - Left: rating stats + latest review preview
+     - Right: CTA card leading to full menu
+   ========================= -->
+<section class="home-band home-band--warm pt-4 pb-5">
+  <div class="container">
+    <!-- Reviews row -->
+    <div class="row g-4 align-items-start mb-5">
+      <!-- Left: review summary -->
+      <div class="col-lg-6">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <p class="section-kicker mb-1">WHAT CUSTOMERS SAY</p>
+            <h2 class="section-title mb-1">Reviews</h2>
+            {% if review_stats.total_reviews %}
+              <p class="text-muted mb-0 small">
+                Average rating
+                <strong>{{ review_stats.avg_rating|floatformat:1 }}★</strong>
+                from {{ review_stats.total_reviews }} review{{ review_stats.total_reviews|pluralize }}.
+              </p>
+            {% else %}
+              <p class="text-muted mb-0 small">
+                No reviews yet. Be the first to tell us what you think!
+              </p>
+            {% endif %}
+          </div>
+          <a href="{% url 'reviews' %}" class="btn btn-link fw-semibold text-decoration-none">
+            View all reviews →
+          </a>
+        </div>
+
+        <!-- Show latest review snippet if any exist -->
+        {% if reviews %}
+          <div class="card review-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold">{{ reviews.0.name }}</span>
+                <span class="badge bg-warning text-dark">{{ reviews.0.rating }}★</span>
+              </div>
+              <p class="text-muted small mb-0">
+                {{ reviews.0.comment|truncatechars:160 }}
+              </p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Right: CTA box to go to full menu -->
+      <div class="col-lg-6">
+        <div class="card success-card border-0">
+          <div class="card-body text-center py-4">
+            <p class="section-kicker mb-1">HUNGRY?</p>
+            <h2 class="section-title mb-2">Ready to Order?</h2>
+            <p class="text-muted mb-4">
+              Browse our complete menu with dozens of burgers, sides and drinks.
+            </p>
+            <a href="{% url 'menu' %}" class="btn btn-lg btn-warning px-5">
+              View Full Menu →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

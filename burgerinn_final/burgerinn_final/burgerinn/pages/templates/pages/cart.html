@@ -1,0 +1,177 @@
+{% extends "pages/base.html" %}
+{% block title %}My Cart · BurgerInn{% endblock %}
+
+{% block content %}
+<!-- ============================================================
+     CART PAGE
+     - Driven by build_cart_context(request) in pages/cart.py
+     - Expects:
+         cart_items: list of lines (item, size, size_label, qty, price, line_total)
+         cart_subtotal: Decimal
+         cart_total_qty: int
+     - Allows:
+         - Update quantity (cart_update view)
+         - Remove single line (cart_remove view)
+         - Clear full cart (cart_clear view)
+         - Proceed to checkout (checkout_view)
+     ============================================================ -->
+<section class="container py-4">
+  <header class="mb-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 mb-1">Your Cart</h1>
+      <p class="text-muted m-0">Review your burgers before placing the order.</p>
+    </div>
+  </header>
+
+  {% if cart_items %}
+    <div class="row">
+      <!-- =========================
+           LEFT: cart item table
+           ========================= -->
+      <div class="col-lg-8 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th style="width:110px;">Size</th>
+                  <th style="width:110px;">Price</th>
+                  <th style="width:140px;">Qty</th>
+                  <th style="width:120px;">Total</th>
+                  <th style="width:80px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in cart_items %}
+                  <tr>
+                    <!-- Item name + category -->
+                    <td>
+                      <div class="fw-semibold">{{ row.item.name }}</div>
+                      <div class="text-muted small">{{ row.item.category.name }}</div>
+                    </td>
+
+                    <!-- Size label (from MenuItemSize or "Standard") -->
+                    <td>
+                      {% if row.size_label %}
+                        <span class="badge bg-light text-dark border">
+                          {{ row.size_label }}
+                        </span>
+                      {% else %}
+                        <span class="text-muted small">Standard</span>
+                      {% endif %}
+                    </td>
+
+                    <!-- Unit price for this size -->
+                    <td>Rs {{ row.price }}</td>
+
+                    <!-- Quantity update form → calls cart_update (keeps same item + size) -->
+                    <td>
+                      <form method="post"
+                            action="{% url 'cart_update' row.item.id %}"
+                            class="d-flex gap-2">
+                        {% csrf_token %}
+                        <!-- Keep the size (S/M/L or empty) so the correct line is updated -->
+                        <input type="hidden"
+                               name="size"
+                               value="{{ row.size|default_if_none:'' }}">
+
+                        <input type="number"
+                               name="qty"
+                               value="{{ row.qty }}"
+                               min="1"
+                               class="form-control form-control-sm"
+                               style="width:70px;">
+
+                        <button class="btn btn-sm btn-outline-secondary" type="submit">
+                          Update
+                        </button>
+                      </form>
+                    </td>
+
+                    <!-- Line total = unit price × qty -->
+                    <td>Rs {{ row.line_total }}</td>
+
+                    <!-- Remove button for this line → calls cart_remove -->
+                    <td>
+                      <form method="post"
+                            action="{% url 'cart_remove' row.item.id %}">
+                        {% csrf_token %}
+                        <input type="hidden"
+                               name="size"
+                               value="{{ row.size|default_if_none:'' }}">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">
+                          ✕
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================
+           RIGHT: summary + actions
+           ========================= -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Order Summary</h5>
+
+            <!-- Subtotal + item count (from build_cart_context) -->
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Items ({{ cart_total_qty }})</span>
+              <span>Rs {{ cart_subtotal }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Delivery</span>
+              <span>To be confirmed</span>
+            </div>
+
+            <hr>
+
+            <!-- Total here = current subtotal (final total is recalculated in checkout_view) -->
+            <div class="d-flex justify-content-between mb-3">
+              <span class="fw-semibold">Total</span>
+              <span class="fw-semibold">Rs {{ cart_subtotal }}</span>
+            </div>
+
+            <!-- Proceed to checkout (GET → checkout_view) -->
+            <form method="get"
+                  action="{% url 'checkout' %}"
+                  class="d-grid gap-2">
+              <button type="submit" class="btn btn-warning fw-semibold">
+                Proceed with order
+              </button>
+            </form>
+
+            <!-- Clear entire cart (POST → cart_clear) -->
+            <form method="post"
+                  action="{% url 'cart_clear' %}"
+                  class="mt-2">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger btn-sm w-100" type="submit">
+                Clear Cart
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Back link to keep browsing menu -->
+        <a href="{% url 'menu' %}" class="btn btn-outline-secondary w-100">
+          ← Continue browsing menu
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <!-- Empty-state when build_cart_context returned no lines -->
+    <div class="alert alert-info">
+      Your cart is empty. <a href="{% url 'menu' %}">Browse the menu</a> to add some burgers.
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

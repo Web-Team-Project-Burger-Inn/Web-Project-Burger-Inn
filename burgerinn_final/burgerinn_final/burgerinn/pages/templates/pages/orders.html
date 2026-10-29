@@ -1,0 +1,168 @@
+{% extends "pages/base.html" %}
+{% block title %}My Order · BurgerInn{% endblock %}
+
+{% block content %}
+
+<!--
+  MY ORDER / ORDER TRACKER PAGE
+
+  - Uses context from orders_view:
+      • current_order   → latest active order for this user (or None)
+      • progress_step   → 1–4 (controls CSS width of progress bar)
+
+  - Progress bar styling comes from CSS:
+      .order-progress.order-step-1 .progress-bar { width: 15%; } etc.
+
+  - When order is completed, user can click "Order ready – Back to home"
+    which calls order_acknowledge_view and hides this order next time.
+-->
+
+<section class="container py-4">
+  <header class="mb-3">
+    <h1 class="h3 mb-1">Track My Order</h1>
+    <p class="text-muted m-0">
+      See where your latest burgers is in the journey from oven to your door.
+    </p>
+  </header>
+
+  <!--
+    If there is no active order:
+      • Either user has never ordered
+      • Or they clicked "Order ready – Back to home"
+        and the order has been acknowledged in DB
+    → Show simple info message with link to menu
+  -->
+  {% if not current_order %}
+    <!-- Shown after user clicks 'Order ready' OR if no order at all -->
+    <div class="alert alert-info">
+      You don’t have any active orders right now. Add something to your
+      <a href="{% url 'menu' %}">cart</a> to get started.
+    </div>
+
+  {% else %}
+    <!-- o = shorthand for current_order -->
+    {% with o=current_order %}
+    <div class="card order-card shadow-sm">
+      <div class="card-body">
+
+        <!--
+          TOP ROW: order id, basic info + status pill
+          Status pill color depends on o.status via template ifs
+        -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <div class="fw-semibold">Order #{{ o.id }}</div>
+            <small class="text-muted">
+              Placed on {{ o.created_at|date:"d M Y, H:i" }}<br>
+              Type: {{ o.get_order_type_display }}
+              <!-- For delivery we show truncated address,
+                   for carryout we show store_location -->
+              {% if o.store_location %} · {{ o.store_location }}
+              {% elif o.address %} · {{ o.address|truncatechars:40 }}
+              {% endif %}
+            </small>
+          </div>
+
+          <span class="badge
+            {% if o.status == 'completed' %} bg-success
+            {% elif o.status == 'on_the_way' %} bg-primary
+            {% elif o.status == 'in_oven' %} bg-warning text-dark
+            {% else %} bg-secondary
+            {% endif %}
+          ">
+            {{ o.get_status_display }}
+          </span>
+        </div>
+
+        <!-- Short explainer text under header -->
+        <p class="text-muted small mb-3">
+          Your order will be ready in less than <strong>20 minutes</strong> in most cases.
+          We’ll keep this tracker updated as your burgers move from the kitchen to you.
+        </p>
+
+        <!--
+          PROGRESS BAR
+          - The class order-step-{{ progress_step }} is set in the view
+          - CSS maps each step to a different width (15, 45, 75, 100%)
+          - No JavaScript used; purely CSS driven
+        -->
+        <div class="order-progress-wrap mb-4">
+          <div class="progress order-progress order-step-{{ progress_step }}">
+            <div class="progress-bar"
+                 role="progressbar"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+            </div>
+          </div>
+          <div class="d-flex justify-content-between text-muted tiny-labels mt-1">
+            <span>In progress</span>
+            <span>Completed</span>
+          </div>
+        </div>
+
+        <!--
+          ITEMS LIST
+          - Loops through Order.items (OrderItem objects)
+          - Shows name, category, size_label, quantity, and line_total
+        -->
+        <h6 class="mb-2">Items in this order</h6>
+        <ul class="list-group mb-3">
+          {% for row in o.items.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-semibold">{{ row.item.name }}</div>
+                <div class="text-muted small">
+                  {{ row.item.category.name }}
+                  {% if row.size_label %} · {{ row.size_label }}{% endif %}
+                </div>
+                <div class="text-muted small">
+                  Qty: {{ row.quantity }} × Rs {{ row.unit_price }}
+                </div>
+              </div>
+              <span>Rs {{ row.line_total }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <!--
+          PRICE SUMMARY
+          - Subtotal (items only)
+          - Delivery fee
+          - Final total (already includes any deal discount)
+        -->
+        <div class="mb-1 d-flex justify-content-between">
+          <span class="text-muted">Items subtotal</span>
+          <span>Rs {{ o.subtotal }}</span>
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted">Delivery fee</span>
+          <span>Rs {{ o.delivery_fee }}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+          <span class="fw-semibold">Order total</span>
+          <span class="fw-semibold">Rs {{ o.total }}</span>
+        </div>
+
+        <!--
+          COMPLETED STATE: acknowledgment button
+          - Only visible once status == "completed"
+          - Clicking this calls order_acknowledge_view
+            which tags the order notes with [ACK] so
+            it will no longer show as active next time.
+        -->
+        {% if o.status == "completed" %}
+          <div class="text-center mt-4">
+            <a href="{% url 'order_acknowledge' o.id %}"
+               class="btn btn-success px-4">
+              ✅ Order ready – Back to home
+            </a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endwith %}
+  {% endif %}
+</section>
+{% endblock %}

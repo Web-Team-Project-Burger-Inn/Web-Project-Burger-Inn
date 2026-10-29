@@ -1,0 +1,148 @@
+{% extends "pages/base.html" %}
+{% block title %}My Profile · BurgerInn{% endblock %}
+
+{% block content %}
+
+<!--
+  PROFILE PAGE
+  - LEFT: basic user and profile info (username, email, phone, address)
+  - RIGHT: order history + favourites (linked to Order / Favorite models)
+-->
+
+<h1 class="mb-4">👤 My Profile</h1>
+
+<div class="row g-4">
+  <!--
+    LEFT COLUMN: Basic profile information
+    - Uses User and UserProfile (phone, address)
+  -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <!-- Username (from auth.User) -->
+        <h4 class="card-title mb-1">{{ profile.user.username }}</h4>
+
+        <!-- Email (from auth.User) -->
+        <p class="text-muted mb-3">{{ profile.user.email }}</p>
+
+        <!-- Phone and address come from UserProfile model -->
+        <p class="mb-1">
+          <strong>Phone:</strong>
+          {{ profile.phone|default:"Not added yet" }}
+        </p>
+        <p class="mb-0">
+          <strong>Address:</strong>
+          {{ profile.address|default:"Not added yet" }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    RIGHT COLUMN: Orders + Favorites
+    - Order history table shows line items and total
+    - Favourite burgers section lets user jump to menu or remove favourites
+  -->
+  <div class="col-lg-8">
+    <!-- ================= ORDER HISTORY ================= -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">🧾 Order history</h5>
+
+        {% if orders %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Items</th>
+                  <th class="text-end">Total (Rs)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Loop over all orders for this user (prefetched in view) -->
+                {% for order in orders %}
+                  <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
+                    <!-- Human-readable label for delivery/carryout -->
+                    <td>{{ order.get_order_type_display }}</td>
+                    <td>
+                      <!-- Show each line item for that order:
+                           - item name
+                           - size label if available (S/M/L)
+                           - quantity
+                      -->
+                      {% for line in order.items.all %}
+                        {{ line.item.name }}{% if line.size_label %} ({{ line.size_label }}){% endif %} ×{{ line.quantity }}{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </td>
+                    <td class="text-end">{{ order.total }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <!-- Empty state when user has never ordered -->
+          <p class="text-muted mb-0">You haven't placed any orders yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!--
+      FAVOURITES
+      - Uses Favorite model (user + MenuItem)
+      - Card contains:
+        • name + category
+        • link to menu filtered by this item name (?q=…)
+        • form that POSTs to favorite_toggle to remove favourite
+    -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">❤️ My Favorites</h5>
+
+        {% if favorites %}
+          <div class="row g-3">
+            {% for fav in favorites %}
+              <div class="col-12 col-md-6">
+                <div class="card h-100">
+                  <div class="card-body d-flex flex-column">
+                    <!-- Favourite item name and its category -->
+                    <h5 class="card-title mb-1">{{ fav.item.name }}</h5>
+                    <p class="text-muted small mb-2">{{ fav.item.category.name }}</p>
+
+                    <!-- Link back to menu page, searching by item name via ?q= -->
+                    <a href="{% url 'menu' %}?q={{ fav.item.name }}"
+                       class="btn btn-sm btn-outline-primary mt-auto mb-2">
+                      View Item →
+                    </a>
+
+                    <!-- Remove button:
+                         - POSTs to favorite_toggle view
+                         - next=profile so user stays on profile after removal
+                    -->
+                    <form method="post" action="{% url 'favorite_toggle' fav.item.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="next" value="{% url 'profile' %}">
+                      <button class="btn btn-sm btn-danger w-100">Remove ♥</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Empty state when no favourites yet -->
+          <p class="text-muted mb-0">
+            You don’t have any favourites yet. Browse the
+            <a href="{% url 'menu' %}">menu</a> and tap the heart icon.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

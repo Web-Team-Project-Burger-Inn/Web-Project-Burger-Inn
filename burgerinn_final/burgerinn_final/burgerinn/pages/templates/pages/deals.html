@@ -1,0 +1,97 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}Special Offers · BurgerInn{% endblock %}
+
+{% block content %}
+<!-- ============================================================
+     DEALS PAGE
+     - Shows all currently active Deal objects (passed as "deals")
+     - Each card shows image, type, code, price and validity
+     ============================================================ -->
+<section class="container py-4">
+  <!-- Page heading + short description -->
+  <header class="mb-4">
+    <h1 class="h3 mb-1">Special Offers</h1>
+    <p class="text-muted m-0">
+      Limited-time deals on your favourite burgers and sides.
+    </p>
+  </header>
+
+  {% if deals %}
+    <div class="row g-4">
+      <!-- Loop through all active deals (provided by deals_view) -->
+      {% for deal in deals %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card deal-card h-100 shadow-sm">
+
+            <!-- Optional deal image configured in Django admin -->
+            {% if deal.image %}
+              <img src="{{ deal.image.url }}" class="card-img-top" alt="{{ deal.title }}">
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+
+              <!-- Title + deal type badge (e.g. Combo, Student Special) -->
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h5 class="card-title mb-1">{{ deal.title }}</h5>
+                  <p class="text-muted small mb-1">
+                    {{ deal.description }}
+                  </p>
+                </div>
+                <span class="badge bg-warning text-dark ms-2">
+                  {{ deal.deal_type }}
+                </span>
+              </div>
+
+              <!-- Deal code badge (what the user will type at checkout) -->
+              {% if deal.code %}
+                <div class="mb-2">
+                  <span class="badge bg-dark text-uppercase px-3 py-2">
+                    Deal code: <strong>{{ deal.code }}</strong>
+                  </span>
+                </div>
+              {% endif %}
+
+              <!-- Price row with original price + % OFF -->
+              <div class="mb-2">
+                <span class="fw-bold text-success">
+                  Rs {{ deal.price }}
+                </span>
+                {% if deal.original_price and deal.original_price > deal.price %}
+                  <span class="text-muted text-decoration-line-through ms-2 small">
+                    Rs {{ deal.original_price }}
+                  </span>
+                  {% if deal.discount_percentage %}
+                    <span class="badge bg-danger ms-2">
+                      {{ deal.discount_percentage }}% OFF
+                    </span>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              <!-- Validity + optional terms/conditions text -->
+              <p class="text-muted small mb-1">
+                <strong>Valid until:</strong>
+                {{ deal.end_date|date:"d M Y" }}
+              </p>
+
+              {% if deal.terms_conditions %}
+                <p class="text-muted extra-small mb-0">
+                  <strong>Terms:</strong> {{ deal.terms_conditions }}
+                </p>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Fallback when there are no active deals in the database -->
+    <div class="alert alert-info">
+      There are no active deals at the moment. Check back soon for fresh offers!
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

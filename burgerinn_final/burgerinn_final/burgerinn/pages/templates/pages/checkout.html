@@ -1,0 +1,161 @@
+{% extends "pages/base.html" %}
+{% block title %}Checkout · BurgerInn{% endblock %}
+
+{% block content %}
+<!-- ============================================================
+     CHECKOUT PAGE
+     - Left column: ReservationForm (contact + delivery/carryout + deal code)
+     - Right column: read-only summary of the current cart
+     - Uses cart context from build_cart_context (cart_items, cart_subtotal, cart_total_qty)
+     ============================================================ -->
+<section class="container py-4">
+  <header class="mb-3">
+    <h1 class="h3 mb-1">Checkout</h1>
+    <p class="text-muted m-0">One last step before we start cooking your burgers.</p>
+  </header>
+
+  <div class="row">
+    <!-- =========================
+         LEFT: contact / delivery form
+         ========================= -->
+    <div class="col-lg-7 mb-3">
+      <div class="card reservation-card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Contact & Delivery Details</h2>
+
+          <!-- ReservationForm: full_name, phone, email, order_type, address, store_location + extra deal_code -->
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Full name -->
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              {{ form.full_name }}
+              {% if form.full_name.errors %}
+                <div class="text-danger small">{{ form.full_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label class="form-label">Phone</label>
+              {{ form.phone }}
+              {% if form.phone.errors %}
+                <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Order type: delivery vs carryout (maps to Reservation.ORDER_TYPE_CHOICES) -->
+            <div class="mb-3">
+              <label class="form-label">Order Type</label>
+              {{ form.order_type }}
+              <div class="form-text">
+                Choose delivery to your address or carryout from a store.
+              </div>
+              {% if form.order_type.errors %}
+                <div class="text-danger small">{{ form.order_type.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Deal code: extra non-model field used in checkout_view to apply Deal logic -->
+            <div class="mb-3">
+              <label class="form-label">Deal code (optional)</label>
+              {{ form.deal_code }}
+              {% if form.deal_code.errors %}
+                <div class="text-danger small">{{ form.deal_code.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">
+                If you have a special offer code from our Deals page, enter it here.
+              </div>
+            </div>
+
+            <!-- Delivery address (used only when order_type = delivery) -->
+            <div class="mb-3">
+              <label class="form-label">Delivery Address (if delivery)</label>
+              {{ form.address }}
+              {% if form.address.errors %}
+                <div class="text-danger small">{{ form.address.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Carryout store location (used when order_type = carryout) -->
+            <div class="mb-3">
+              <label class="form-label">Store Location (if carryout)</label>
+              {{ form.store_location }}
+              {% if form.store_location.errors %}
+                <div class="text-danger small">{{ form.store_location.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Submit: triggers checkout_view with full deal + order creation logic -->
+            <button type="submit" class="btn btn-warning w-100 fw-semibold mt-2">
+              Confirm order
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================
+         RIGHT: order/cart summary
+         ========================= -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Order Summary</h2>
+
+          <!-- Each row corresponds to a cart line from build_cart_context -->
+          <ul class="list-group mb-3">
+            {% for row in cart_items %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-semibold">{{ row.item.name }}</div>
+                  <div class="text-muted small">
+                    {{ row.item.category.name }}
+                    {% if row.size_label %} · {{ row.size_label }}{% endif %}
+                  </div>
+                  <div class="text-muted small">Qty: {{ row.qty }}</div>
+                </div>
+                <span>Rs {{ row.line_total }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+
+          <!-- Subtotal + rough delivery info -->
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Items ({{ cart_total_qty }})</span>
+            <span>Rs {{ cart_subtotal }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Delivery</span>
+            <span>To be confirmed</span>
+          </div>
+
+          <hr>
+
+          <!-- Display total as current cart subtotal (final total recalculated in checkout_view) -->
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fw-semibold">Total</span>
+            <span class="fw-semibold">Rs {{ cart_subtotal }}</span>
+          </div>
+
+          <p class="text-muted small mt-2 mb-0">
+            Your final total may change slightly depending on delivery fees
+            or in-store promotions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

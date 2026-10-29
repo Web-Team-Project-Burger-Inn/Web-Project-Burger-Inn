@@ -1,0 +1,71 @@
+{% extends "pages/base.html" %}
+{% block title %}Order Placed · BurgerInn{% endblock %}
+
+{% block content %}
+
+<!-- ORDER SUCCESS / CONFIRMATION PAGE
+     - Rendered after checkout_view creates an Order instance
+     - Expects `order` in the context (Order model)
+     - Shows basic order info and totals, no JavaScript needed
+-->
+
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- success-card styling is defined in the global CSS (rounded, shadowed card) -->
+      <div class="card success-card text-center">
+        <div class="card-body">
+          <h1 class="h3 mb-3">🎉 Order Confirmed!</h1>
+
+          <!-- Personalised thank-you using the name collected at checkout -->
+          <p class="mb-3">
+            Thank you <strong>{{ order.full_name }}</strong> for ordering with BurgerInn.
+          </p>
+
+          <!-- Order type (Delivery vs Carryout) -->
+          <p class="mb-1">
+            <strong>Order type:</strong> {{ order.get_order_type_display }}
+          </p>
+
+          <!-- Show either delivery address or pickup store, depending on order_type -->
+          {% if order.order_type == "delivery" %}
+            <p class="mb-1">
+              <strong>Delivery address:</strong> {{ order.address }}
+            </p>
+          {% else %}
+            <p class="mb-1">
+              <strong>Pickup store:</strong> {{ order.store_location }}
+            </p>
+          {% endif %}
+
+          <!-- Totals breakdown (all values come directly from the Order record) -->
+          <div class="mt-3 mb-3 text-start d-inline-block">
+            <p class="mb-1">
+              <span class="text-muted">Items subtotal:</span>
+              <strong>Rs {{ order.subtotal }}</strong>
+            </p>
+            <p class="mb-1">
+              <span class="text-muted">Delivery fee:</span>
+              <strong>Rs {{ order.delivery_fee }}</strong>
+            </p>
+            <hr class="my-2">
+            <p class="mb-1">
+              <span class="fw-semibold">Order total:</span>
+              <span class="fw-semibold">Rs {{ order.total }}</span>
+            </p>
+          </div>
+
+          <!-- Short message explaining what happens next -->
+          <p class="text-muted small mb-4">
+            You will receive a confirmation call or message shortly. Keep your phone nearby.
+          </p>
+
+          <!-- Primary actions: go back to menu to order more, or home page -->
+          <a href="{% url 'menu' %}" class="btn btn-primary me-2">Order more</a>
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

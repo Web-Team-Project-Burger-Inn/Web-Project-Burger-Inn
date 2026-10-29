@@ -1,0 +1,14 @@
+
+
+[
+  { "model": "pages.menucategory", "pk": 1, "fields": { "name": "Classic Burgers", "slug": "classic-burgers", "icon": "bi bi-star", "is_active": true, "sort_order": 1 } },
+  { "model": "pages.menucategory", "pk": 2, "fields": { "name": "Gourmet Burgers", "slug": "gourmet-burgers", "icon": "bi bi-star-fill", "is_active": true, "sort_order": 2 } },
+  { "model": "pages.menucategory", "pk": 3, "fields": { "name": "Sides", "slug": "sides", "icon": "bi bi-bag", "is_active": true, "sort_order": 3 } },
+  { "model": "pages.menucategory", "pk": 4, "fields": { "name": "Drinks", "slug": "drinks", "icon": "bi bi-cup", "is_active": true, "sort_order": 4 } },
+
+  { "model": "pages.menuitem", "pk": 1, "fields": { "category": 1, "name": "Classic Burger", "slug": "classic-burger", "description": "Juicy beef patty with lettuce, tomato, cheese and signature burger sauce.", "price": "7.99", "is_veg": true, "is_spicy": false, "is_available": true, "image": "" } },
+  { "model": "pages.menuitem", "pk": 2, "fields": { "category": 1, "name": "Double Cheese Burger", "slug": "double-cheese-burger", "description": "Two beef patties layered with melted cheese and burger sauce.", "price": "8.99", "is_veg": false, "is_spicy": false, "is_available": true, "image": "" } },
+  { "model": "pages.menuitem", "pk": 3, "fields": { "category": 2, "name": "Truffle Funghi", "slug": "truffle-funghi", "description": "Mushrooms, truffle oil, garlic cream base.", "price": "12.50", "is_veg": true, "is_spicy": false, "is_available": true, "image": "" } },
+  { "model": "pages.menuitem", "pk": 4, "fields": { "category": 3, "name": "Garlic Bread", "slug": "garlic-bread", "description": "Toasty bread with garlic butter.", "price": "3.50", "is_veg": true, "is_spicy": false, "is_available": true, "image": "" } },
+  { "model": "pages.menuitem", "pk": 5, "fields": { "category": 4, "name": "Cola (can)", "slug": "cola-can", "description": "", "price": "1.50", "is_veg": true, "is_spicy": false, "is_available": true, "image": "" } }
+]
