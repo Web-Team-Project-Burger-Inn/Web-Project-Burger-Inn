@@ -6,33 +6,15 @@ Main features covered here:
 - Authentication (signup / login / logout)
 """
 
-from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
-
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Q, Prefetch, Avg, Count
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.db.models import Avg, Count
+from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.views.decorators.http import require_POST
 
 from .forms import SignUpForm
-from .models import (
-    About,
-    Deal,
-    MenuCategory,
-    MenuItem,
-    MenuItemSize,
-    Review,
-    UserProfile,
-    Favorite,
-    Order,
-    OrderItem,
-)
-
+from .models import Deal, MenuItem, Review
 # -------------------
 # Home page
 # -------------------
